@@ -1,10 +1,17 @@
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate diesel;
+
+#[macro_use]
+extern crate diesel_migrations;
+
 use actix_web::{App, HttpServer};
 use dotenv::dotenv;
 use std::env;
 
+mod server;
 mod user;
 mod rental;
 
