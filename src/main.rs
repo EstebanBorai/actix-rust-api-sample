@@ -11,6 +11,7 @@ use actix_web::{App, HttpServer};
 use dotenv::dotenv;
 use std::env;
 
+mod schema;
 mod server;
 mod user;
 mod rental;
@@ -19,6 +20,9 @@ mod rental;
 async fn main() -> std::io::Result<()> {
 	dotenv().ok();
 	env_logger::init();
+
+	// Initialize Database
+	server::init_database();
 
 	let host = env::var("HOST").expect("Host not set");
 	let port = env::var("PORT").expect("Port not set");

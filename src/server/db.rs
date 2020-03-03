@@ -1,6 +1,4 @@
-mod api_error;
-
-use api_error::ApiError;
+use crate::server::ApiError;
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use lazy_static::lazy_static;
@@ -21,11 +19,11 @@ lazy_static! {
 	};
 }
 
-pub fn init() {
+pub fn init_database() {
 	info!("Initializing DB");
 	lazy_static::initialize(&POOL);
 	let conn = connection().expect("Failed to get db connection");
-	embed_migrations::run(&conn).unwrap();
+	embedded_migrations::run(&conn).unwrap();
 }
 
 pub fn connection() -> Result<DbConnection, ApiError> {
