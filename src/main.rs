@@ -5,6 +5,7 @@ use actix_web::{App, HttpServer};
 use dotenv::dotenv;
 use std::env;
 
+mod user;
 mod rental;
 
 #[actix_rt::main]
@@ -17,8 +18,10 @@ async fn main() -> std::io::Result<()> {
 
 	info!("Initializing");
 
-	HttpServer::new(|| App::new().configure(rental::init_routes))
-	.bind(format!("{}:{}", host, port))?
+	HttpServer::new(|| App::new()
+		.configure(user::init_routes)
+		.configure(rental::init_routes)
+	).bind(format!("{}:{}", host, port))?
 	.run()
 	.await
 }
