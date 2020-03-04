@@ -1,4 +1,4 @@
-# rust-actix-rentals
+# rust-actix-postgres
 :crab: Actix based REST Web API to learn Rust
 
 ## Running Locally
@@ -10,11 +10,11 @@ Docker is used to setup a Postgres database.
 The first step is building the Dockerfile as follows:
 
 ```bash
-docker build -t actix-rentals-db ./docker 
+docker build -t rust-actix-postgres-db ./docker 
 ```
 
 ```bash
-docker run -p 5432:5432 actix-rentals-db
+docker run -p 5432:5432 rust-actix-postgres-db
 ```
 
 ### Dependencies

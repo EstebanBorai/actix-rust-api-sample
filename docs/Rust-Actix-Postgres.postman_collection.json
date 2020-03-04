@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "b5c4c2cf-8aae-4eed-b1f6-dcace57d2b92",
-		"name": "Rust-Actix-Rentals",
+		"name": "Rust-Actix-Postgres",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

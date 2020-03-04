@@ -14,7 +14,6 @@ use std::env;
 mod schema;
 mod server;
 mod user;
-mod rental;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -31,7 +30,6 @@ async fn main() -> std::io::Result<()> {
 
 	HttpServer::new(|| App::new()
 		.configure(user::init_routes)
-		.configure(rental::init_routes)
 	).bind(format!("{}:{}", host, port))?
 	.run()
 	.await

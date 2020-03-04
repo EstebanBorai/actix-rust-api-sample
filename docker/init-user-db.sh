@@ -2,6 +2,6 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-		CREATE DATABASE actix_rentals;
-		GRANT ALL PRIVILEGES ON DATABASE actix_rentals TO admin;
+		CREATE DATABASE rust_actix_postgres;
+		GRANT ALL PRIVILEGES ON DATABASE rust_actix_postgres TO admin;
 EOSQL

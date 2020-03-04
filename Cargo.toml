@@ -1,5 +1,5 @@
 [package]
-name = "rust-actix-rentals"
+name = "rust-actix-postgres"
 version = "0.1.0"
 authors = ["Esteban Borai <estebanborai@gmail.com>"]
 edition = "2018"
@@ -9,9 +9,8 @@ edition = "2018"
 [dependencies]
 actix-web = "2"
 actix-rt = "1"
-bigdecimal = { version = "0.1.0", features = ["serde"] }
 chrono = { version = "0.4", features = ["serde"] }
-diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono", "numeric"] }
+diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono"] }
 diesel_migrations = "1.4"
 dotenv = "0.11"
 env_logger = "0.6"
