@@ -40,3 +40,11 @@ Then run the following command to create a migration directory:
 ```bash
 diesel setup
 ```
+
+> The database should be active for the moment diesel cli is beign used.
+
+Finally run migrations:
+
+```bash
+diesel migration run
+```
