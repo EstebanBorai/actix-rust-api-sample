@@ -1,5 +1,6 @@
 use actix_web::http::StatusCode;
 use actix_web::{HttpResponse, ResponseError};
+use actix_web::error::Error as ActixError;
 use diesel::result::Error as DieselError;
 use serde::Deserialize;
 use serde_json::json;
@@ -55,5 +56,11 @@ impl ResponseError for ApiError {
 			.json(json!({
 				"message": message
 			}))
+	}
+}
+
+impl From<ActixError> for ApiError {
+	fn from(error: ActixError) -> ApiError {
+		ApiError::new(500, error.to_string())
 	}
 }
