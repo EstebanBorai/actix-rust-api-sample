@@ -6,17 +6,12 @@
 - Docker
 
 ### Docker
-Docker is used to setup a Postgres database.
-The first step is building the Dockerfile as follows:
+This project makes use of a Postgres database and a Redis server which run on Docker.
+Build and set "up" the docker containers using `docker-compose` as follows:
 
-```bash
-docker build -t rust-actix-postgres-db ./docker 
+```sh
+docker-compose -f docker-compose.yml up --build
 ```
-
-```bash
-docker run -p 5432:5432 rust-actix-postgres-db
-```
-
 ### Dependencies
 
 Depedencies are defined in the *Cargo.toml* file, these dependencies are automatically installed when running euther `cargo run` or `cargo build` and will be stored in the `~/.cargo/` directory.
