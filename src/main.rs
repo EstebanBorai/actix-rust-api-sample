@@ -7,8 +7,9 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use actix_redis::RedisSession;
+use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
+use actix_redis::{RedisSession};
 use dotenv::dotenv;
 use std::env;
 
@@ -30,12 +31,12 @@ async fn main() -> std::io::Result<()> {
 	let redis_host = env::var("REDIS_HOST").expect("Redis Host is missing");
 	let redis_port = env::var("REDIS_PORT").expect("Redis Port is missing");
 
-	info!("Initializing");
-
-	let server = HttpServer::new(move || App::new()
-		.wrap(RedisSession::new(format!("{}:{}", redis_host, redis_port), &[0; 32]))
-		.configure(user::init_routes)
-		.configure(auth::init_routes)
+	let server = HttpServer::new(move ||
+		App::new()
+			.wrap(Logger::default())
+			.wrap(RedisSession::new(format!("{}:{}", redis_host, redis_port), &[0; 32]))
+			.configure(user::init_routes)
+			.configure(auth::init_routes)
 	);
 
 	server.bind(format!("{}:{}", host, port))?

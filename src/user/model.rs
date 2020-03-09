@@ -48,7 +48,9 @@ impl User {
 	pub fn create(user: UserMessage) ->  Result<Self, ApiError> {
 		let conn = db_connection()?;
 
-		let user = User::from(user);
+		let mut user = User::from(user);
+		user.hash_password()?;
+
 		let user = diesel::insert_into(user::table)
 			.values(user)
 			.get_result(&conn)?;
@@ -94,7 +96,7 @@ impl User {
 	}
 
 	pub fn find_by_email(email: String) -> Result<Self, ApiError> {
-		let conn = db::connection()?;
+		let conn = db_connection()?;
 
 		let user = user::table
 			.filter(user::email.eq(email))
