@@ -138,6 +138,6 @@ bundle
 
 .vendor-new
 
-# Rust / Cargo #
-################
-/target
+# Rust #
+########
+target

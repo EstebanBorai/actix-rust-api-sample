@@ -1,48 +1,41 @@
+use std::env;
+use dotenv;
+use actix_web::{App, HttpRequest, HttpServer, Responder, get, HttpResponse};
+use actix_web::middleware::Logger;
+use env_logger;
+
 #[macro_use]
 extern crate log;
 
-#[macro_use]
-extern crate diesel;
-
-#[macro_use]
-extern crate diesel_migrations;
-
-use actix_web::middleware::Logger;
-use actix_web::{App, HttpServer};
-use actix_redis::RedisSession;
-use dotenv::dotenv;
-use std::env;
-
-mod schema;
-mod server;
-mod user;
-mod auth;
+#[get("/")]
+async fn index() -> impl Responder {
+  HttpResponse::Ok().body("Hello world!")
+}
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-	dotenv().ok();
-	env_logger::init();
+  if cfg!(debug_assertions) {
+    env::set_var("RUST_LOG", "warn,info,error,debug");
+    env_logger::init();
+    dotenv::dotenv().ok().expect("Unable to read .env file");
+    warn!("⚠️   Running in development mode");
+  } else {
+    env::set_var("RUST_LOG", "warn,error");
+  }
 
-	// Initialize Database
-	server::init_database();
+  let host: String = env::var("HOST").expect("Missing HOST env var");
+  let port: String = env::var("PORT").expect("Missing PORT env var");
+  let target = format!("{}:{}", host, port);
 
-	let host = env::var("HOST").expect("Host not set");
-	let port = env::var("PORT").expect("Port not set");
-	let redis_host = env::var("REDIS_HOST").expect("Redis Host is missing");
-	let redis_port = env::var("REDIS_PORT").expect("Redis Port is missing");
+  info!("🚀  Server ready at {}", format!("http://{}",&target));
 
-	println!("{}:{}", redis_host, redis_port);
-	println!("{}:{}", host, port);
-
-	let server = HttpServer::new(move ||
-		App::new()
-			.wrap(RedisSession::new(format!("{}:{}", redis_host, redis_port), &[0; 32]))
-			.wrap(Logger::default())
-			.configure(user::init_routes)
-			.configure(auth::init_routes)
-	);
-
-	server.bind(format!("{}:{}", host, port))?
-		.run()
-		.await
+  HttpServer::new(||
+      App::new()
+      .wrap(Logger::default())
+      .wrap(Logger::new("%a %r %s %b %{Referer}i %{User-Agent}i %T"))
+      .service(index)
+    )
+    .bind(target)?
+    .run()
+    .await
 }

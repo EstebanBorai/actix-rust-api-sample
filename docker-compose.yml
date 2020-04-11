@@ -1,32 +1,19 @@
+
 version: '3.4'
 
 services:
-  server:
+  bmk_server:
     network_mode: host
     build:
       context: ./
       dockerfile: ./docker/server/Dockerfile
-
     ports:
-      - "5000:5000"
+      - "7878:7878"
     env_file:
       - .env
-
     environment:
       MODE: "${MODE}"
       HOST: "${HOST}"
       PORT: "${PORT}"
+      SESSION_SECRET: "${SESSION_SECRET}"
       RUST_LOG: "${RUST_LOG}"
-      REDIS_HOST: "${REDIS_HOST}"
-      REDIS_PORT: "${REDIS_PORT}"
-      DATABASE_URL: "${DATABASE_URL}"
-
-  database:
-    build: ./docker/postgres
-    ports:
-      - "5432:5432"
-
-  redis:
-    build: ./docker/redis
-    ports:
-      - "6379:6379"
