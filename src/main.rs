@@ -1,15 +1,15 @@
 use std::env;
 use dotenv;
-use actix_web::{App, HttpRequest, HttpServer, Responder, get, HttpResponse};
+use actix_web::{App, HttpRequest, HttpServer, Responder, web};
 use actix_web::middleware::Logger;
 use env_logger;
 
 #[macro_use]
 extern crate log;
 
-#[get("/")]
-async fn index() -> impl Responder {
-  HttpResponse::Ok().body("Hello world!")
+async fn index(req: HttpRequest) -> impl Responder {
+  let name = req.match_info().get("name").unwrap_or("World");
+  format!("Hello {}!", &name)
 }
 
 #[actix_rt::main]
@@ -33,7 +33,8 @@ async fn main() -> std::io::Result<()> {
       App::new()
       .wrap(Logger::default())
       .wrap(Logger::new("%a %r %s %b %{Referer}i %{User-Agent}i %T"))
-      .service(index)
+      .route("/", web::get().to(index))
+      .route("/{name}", web::get().to(index))
     )
     .bind(target)?
     .run()
