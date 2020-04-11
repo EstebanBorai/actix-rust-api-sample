@@ -1,4 +1,3 @@
-
 version: '3.4'
 
 services:
@@ -12,8 +11,5 @@ services:
     env_file:
       - .env
     environment:
-      MODE: "${MODE}"
       HOST: "${HOST}"
       PORT: "${PORT}"
-      SESSION_SECRET: "${SESSION_SECRET}"
-      RUST_LOG: "${RUST_LOG}"
