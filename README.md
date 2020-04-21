@@ -14,6 +14,13 @@ blog "[cloudmaker.dev](https://cloudmaker.dev/)".
 Some setup must be done before getting to run the application.
 The following will walk you through the application environment setup.
 
+When the setup is ready, run the application issuing the following command
+from the project directory:
+
+```sh
+cargo run
+```
+
 ### Running the Postgres Database, Redis and PgAdmin with docker
 A `docker-compose.yml` file is available in the project directory
 with the definition of the following services:

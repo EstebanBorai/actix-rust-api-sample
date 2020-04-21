@@ -1,13 +1,22 @@
-use std::env;
-use dotenv;
-use actix_web::{App, HttpRequest, HttpServer, Responder, web};
-use actix_web::middleware::Logger;
-use env_logger;
+#[macro_use]
+extern crate diesel;
+
+#[macro_use]
+extern crate diesel_migrations;
 
 #[macro_use]
 extern crate log;
 
+use std::env;
+use dotenv;
+use actix_web::{App, HttpServer};
+use actix_web::middleware::Logger;
+use env_logger;
+
 mod user;
+mod api_error;
+mod db;
+mod schema;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -19,6 +28,8 @@ async fn main() -> std::io::Result<()> {
   } else {
     env::set_var("RUST_LOG", "warn,error");
   }
+
+  db::init();
 
   let host: String = env::var("HOST").expect("Missing HOST env var");
   let port: String = env::var("PORT").expect("Missing PORT env var");
