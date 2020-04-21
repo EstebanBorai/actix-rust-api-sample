@@ -13,3 +13,32 @@ services:
     environment:
       HOST: "${HOST}"
       PORT: "${PORT}"
+
+  database:
+    build: ./docker/database
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+
+  pgadmin:
+    build: ./docker/pgadmin
+    ports:
+      - "5050:5050"
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "${PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION}"
+      PGADMIN_CONFIG_LOGIN_BANNER: "${PGADMIN_CONFIG_LOGIN_BANNER}"
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: "${PGADMIN_CONFIG_CONSOLE_LOG_LEVEL}"
+      PGADMIN_LISTEN_PORT: "${PGADMIN_LISTEN_PORT}"
+
+  redis:
+    build: ./docker/redis
+    ports:
+      - "6379:6379"

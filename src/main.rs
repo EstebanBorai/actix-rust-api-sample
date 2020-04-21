@@ -7,10 +7,7 @@ use env_logger;
 #[macro_use]
 extern crate log;
 
-async fn index(req: HttpRequest) -> impl Responder {
-  let name = req.match_info().get("name").unwrap_or("World");
-  format!("Hello {}!", &name)
-}
+mod user;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -33,8 +30,7 @@ async fn main() -> std::io::Result<()> {
       App::new()
       .wrap(Logger::default())
       .wrap(Logger::new("%a %r %s %b %{Referer}i %{User-Agent}i %T"))
-      .route("/", web::get().to(index))
-      .route("/{name}", web::get().to(index))
+      .configure(user::init_routes)
     )
     .bind(target)?
     .run()
