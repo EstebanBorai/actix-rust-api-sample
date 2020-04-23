@@ -4,6 +4,7 @@ use diesel::result::Error as DieselError;
 use serde::Deserialize;
 use serde_json::json;
 use std::fmt;
+use actix_web::error::Error as ActixError;
 
 #[derive(Debug, Deserialize)]
 pub struct ApiError {
@@ -53,5 +54,11 @@ impl ResponseError for ApiError {
 
     HttpResponse::build(status_code)
       .json(json!({ "message": message }))
+  }
+}
+
+impl From<ActixError> for ApiError {
+  fn from(error: ActixError) -> ApiError {
+    ApiError::new(500, error.to_string())
   }
 }

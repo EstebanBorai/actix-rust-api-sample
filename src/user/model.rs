@@ -5,12 +5,15 @@ use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use argon2::Config;
+use rand::Rng;
 
 #[derive(Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "user"]
 pub struct User {
   pub id: Uuid,
   pub email: String,
+  #[serde(skip_serializing)]
   pub password: String,
   pub created_at: NaiveDateTime,
   pub updated_at: Option<NaiveDateTime>,
@@ -55,10 +58,22 @@ impl User {
     Ok(user)
   }
 
+  pub fn find_by_email(email: String) -> Result<Self, ApiError> {
+    let conn = db::connection()?;
+
+    let user = user::table
+      .filter(user::email.eq(email))
+      .first(&conn)?;
+
+    Ok(user)
+  }
+
   pub fn create(user: UserMessage) -> Result<Self, ApiError> {
     let conn = db::connection()?;
 
-    let user = User::from(user);
+    let mut user = User::from(user);
+    user.hash_password()?;
+
     let user = diesel::insert_into(user::table)
       .values(user)
       .get_result(&conn)?;
@@ -86,5 +101,20 @@ impl User {
     ).execute(&conn)?;
 
     Ok(res)
+  }
+
+  pub fn hash_password(&mut self) -> Result<(), ApiError> {
+    let config = Config::default();
+    let salt: [u8; 32] = rand::thread_rng().gen();
+
+    self.password = argon2::hash_encoded(self.password.as_bytes(), &salt, &config)
+      .map_err(|e| ApiError::new(500, format!("Failed to hash password: {}", e)))?;
+
+    Ok(())
+  }
+
+  pub fn verify_password(&self, password: &[u8]) -> Result<bool, ApiError> {
+    argon2::verify_encoded(&self.password, password)
+      .map_err(|e| ApiError::new(500, format!("Failed to verify password: {}", e)))
   }
 }
