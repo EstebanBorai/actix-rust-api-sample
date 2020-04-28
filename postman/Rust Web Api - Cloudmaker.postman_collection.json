@@ -94,6 +94,42 @@
 					"response": []
 				},
 				{
+					"name": "With Params",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:7878/users?email=u1%&created_at[lte]=2020-04-27T00:00:00&sort_by=created_at.asc",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "7878",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "u1%"
+								},
+								{
+									"key": "created_at[lte]",
+									"value": "2020-04-27T00:00:00"
+								},
+								{
+									"key": "sort_by",
+									"value": "created_at.asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Find",
 					"request": {
 						"method": "GET",
