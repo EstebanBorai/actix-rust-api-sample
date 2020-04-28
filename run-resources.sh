@@ -1,2 +1,2 @@
 #!/bin/bash
-docker-compose up --build database redis pgadmin
+docker-compose up --build database redis

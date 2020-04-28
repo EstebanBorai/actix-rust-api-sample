@@ -26,6 +26,20 @@ pub struct UserMessage {
   pub password: String,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct Params {
+  pub email: Option<String>,
+  pub sort_by: Option<String>,
+  #[serde(rename = "created_at[gte]")]
+  pub created_at_gte: Option<NaiveDateTime>,
+  #[serde(rename = "created_at[lte]")]
+  pub created_at_lte: Option<NaiveDateTime>,
+  #[serde(rename = "updated_at[gte]")]
+  pub updated_at_gte: Option<NaiveDateTime>,
+  #[serde(rename = "updated_at[lte]")]
+  pub updated_at_lte: Option<NaiveDateTime>,
+}
+
 impl From<UserMessage> for User {
   fn from(user: UserMessage) -> Self {
     User {
@@ -39,11 +53,50 @@ impl From<UserMessage> for User {
 }
 
 impl User {
-  pub fn find_all() -> Result<Vec<Self>, ApiError> {
+  pub fn find_all(params: Params) -> Result<Vec<Self>, ApiError> {
     let conn = db::connection()?;
 
-    let users = user::table
-      .load::<User>(&conn)?;
+    let mut query = user::table.into_boxed();
+
+    if let Some(email) = params.email {
+      query = query.filter(user::email.like(email))
+    }
+
+    if let Some(created_at_gte) = params.created_at_gte {
+      query = query.filter(user::created_at.ge(created_at_gte));
+    }
+
+    if let Some(created_at_lte) = params.created_at_lte {
+      query = query.filter(user::created_at.le(created_at_lte));
+    }
+
+    if let Some(updated_at_gte) = params.updated_at_gte {
+      query = query.filter(user::updated_at.ge(updated_at_gte));
+    }
+
+    if let Some(updated_at_lte) = params.updated_at_lte {
+      query = query.filter(user::updated_at.le(updated_at_lte));
+    }
+
+    if let Some(sort_by) = params.sort_by {
+      query = match sort_by.as_ref() {
+        "id" => query.order(user::id.asc()),
+        "id.asc" => query.order(user::id.asc()),
+        "id.desc" => query.order(user::id.desc()),
+        "email" => query.order(user::email.asc()),
+        "email.asc" => query.order(user::email.asc()),
+        "email.desc" => query.order(user::email.desc()),
+        "created_at" => query.order(user::created_at.asc()),
+        "created_at.asc" => query.order(user::created_at.asc()),
+        "created_at.desc" => query.order(user::created_at.desc()),
+        "updated_at" => query.order(user::updated_at.asc()),
+        "updated_at.asc" => query.order(user::updated_at.asc()),
+        "updated_at.desc" => query.order(user::updated_at.desc()),
+        _ => query,
+      };
+    }
+
+    let users = query.load::<User>(&conn)?;
 
     Ok(users)
   }
