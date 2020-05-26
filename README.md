@@ -29,7 +29,7 @@ A `docker-compose.yml` file is available in the project directory
 with the definition of the following services:
 
 | Service   | Image                   | Description                 |
-| --------- |:-----------------------:| ---------------------------:|
+| --------- | ----------------------- | --------------------------- |
 | `database`| `postgres:9.6`          | Postgres Database           |
 | `redis`   | `redis:rc-buster`       | Redis                       |
 | `pgadmin` | `dpage/pgadmin4:latest` | A *Postgres* database admin |
