@@ -6,8 +6,12 @@ use uuid::Uuid;
 
 #[get("/users")]
 async fn find_all(params: web::Query<Params>) -> Result<HttpResponse, ApiError> {
-  let users = User::find_all(params.into_inner())?;
-  Ok(HttpResponse::Ok().json(users))
+  let (users, total_pages) = User::find_all(params.into_inner())?;
+
+  Ok(HttpResponse::Ok().json(json!({
+    "users": users,
+    "total_pages": total_pages
+  })))
 }
 
 #[get("/users/{id}")]

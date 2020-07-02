@@ -1,6 +1,7 @@
 use crate::api_error::ApiError;
 use crate::db;
 use crate::schema::user;
+use crate::db::Paginate;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -28,6 +29,8 @@ pub struct UserMessage {
 
 #[derive(Debug, Deserialize)]
 pub struct Params {
+  pub page: Option<i64>,
+  pub page_size: Option<i64>,
   pub email: Option<String>,
   pub sort_by: Option<String>,
   #[serde(rename = "created_at[gte]")]
@@ -53,7 +56,7 @@ impl From<UserMessage> for User {
 }
 
 impl User {
-  pub fn find_all(params: Params) -> Result<Vec<Self>, ApiError> {
+  pub fn find_all(params: Params) -> Result<(Vec<Self>, i64), ApiError> {
     let conn = db::connection()?;
 
     let mut query = user::table.into_boxed();
@@ -96,9 +99,20 @@ impl User {
       };
     }
 
-    let users = query.load::<User>(&conn)?;
+    let (users, total_pages) = match params.page {
+      Some(page) => {
+        let res = query.paginate(page).load::<(User, i64)>(&conn)?;
 
-    Ok(users)
+        let total = res.get(0).map(|x| x.1).unwrap_or(0);
+        let users = res.into_iter().map(|x| x.0).collect();
+        let total_pages = (total as f64 / 10 as f64).ceil() as i64;
+
+        (users, total_pages)
+      },
+      None => (query.load(&conn)?, 1),
+    };
+
+    Ok((users, total_pages))
   }
 
   pub fn find(id: Uuid) -> Result<Self, ApiError> {
